@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Nueva Rutina - Galindo Fit{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="fade-in-up" style="margin-top: 30px;">
+
+    <div style="display: flex; justify-content: space-between; align-items: center;" class="mb-4">
+      <h2 class="font-orbitron text-white mb-0">NUEVA <span class="text-red">RUTINA</span></h2>
+      <a href="{{ url_for('rutinas') }}" class="btn-secondary">Volver</a>
+    </div>
+
+    <div class="fitness-panel" style="max-width: 600px; margin: 0 auto;">
+      <h5 class="font-orbitron text-red text-center mb-4">CREAR RUTINA</h5>
+
+      <form method="POST" action="{{ url_for('nueva_rutina') }}">
+        <div class="form-group mb-3">
+          <label for="nombre" class="form-label text-gray small font-bold">Nombre de la rutina</label>
+          <input type="text" name="nombre" id="nombre" class="input-fitness" required placeholder="Ej: Rutina Fuerza Principiante">
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="descripcion" class="form-label text-gray small font-bold">Descripción</label>
+          <textarea name="descripcion" id="descripcion" class="input-fitness" rows="3" placeholder="Descripción general de la rutina..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-glow w-100">CREAR RUTINA</button>
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

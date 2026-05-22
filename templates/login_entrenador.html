@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Acceso Entrenador - Galindo Fit{% endblock %}
+
+{% block content %}
+<div class="auth-container" style="border: 1px solid var(--accent-red); box-shadow: 0 10px 30px rgba(255, 42, 75, 0.2);">
+    <h2 class="text-red">Portal Entrenador</h2> 
+    <p class="auth-subtitle text-gray">Acceso administrativo seguro.</p>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert-box mb-4 text-center">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <form action="{{ url_for('login_entrenador') }}" method="POST">
+        <div class="form-group">
+            <label for="username">Usuario Administrador</label>
+            <input type="text" id="username" name="username" placeholder="ej: admin" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password" placeholder="••••••••" required>
+        </div>
+        
+        <button type="submit" class="btn-glow w-100 py-3 mt-3" style="font-size: 1.1rem; background-color: #aa0000; border: 1px solid #ff2a4b;">ENTRAR AL DASHBOARD</button>
+    </form>
+    
+    <div style="margin-top: 30px;">
+        <hr style="border-color: #333; margin-bottom: 20px;">
+        <p class="small text-gray">¿Eres un cliente/atleta? <br> <a href="{{ url_for('login') }}" class="text-white font-bold" style="text-decoration: none;">Ir al Portal de Atletas</a></p>
+    </div>
+</div>
+{% endblock %}

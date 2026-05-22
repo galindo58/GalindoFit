@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Rutina - Galindo Fit{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="fade-in-up" style="margin-top: 30px;">
+
+        <!-- HEADER -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h2 class="section-title text-start m-0">RUTINA: <span class="text-red">{{ rutina.nombre }}</span></h2>
+            <a href="{{ url_for('rutinas') }}" class="btn-secondary" style="padding: 8px 16px;">Volver a Rutinas</a>
+        </div>
+
+        <!-- DESCRIPTION -->
+        {% if rutina.descripcion %}
+        <div class="fitness-panel mb-4">
+            <p class="text-gray m-0">{{ rutina.descripcion }}</p>
+        </div>
+        {% endif %}
+
+        <!-- ADD DAY FORM -->
+        <div class="fitness-panel mb-4">
+            <h5 class="font-orbitron text-white mb-3" style="font-size: 0.85rem;">Agregar Día</h5>
+            <form action="{{ url_for('agregar_dia', id_rutina=rutina.id_rutina) }}" method="POST" style="display: flex; gap: 15px; align-items: end;">
+                <div style="flex: 1;">
+                    <label class="form-label text-gray small font-bold">Nombre del día</label>
+                    <input type="text" name="nombre_dia" class="input-fitness mb-0" placeholder="Ej: Día 1 - Pecho y Tríceps" required>
+                </div>
+                <button type="submit" class="btn-glow" style="white-space: nowrap;">+ Agregar Día</button>
+            </form>
+        </div>
+
+        <!-- DAYS SECTION -->
+        {% if dias %}
+            {% for dia in dias %}
+            <div class="fitness-panel mb-4" style="border-left: 3px solid #ff2a4b;">
+
+                <!-- Day Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h5 class="font-orbitron text-white m-0">{{ dia.nombre_dia }}</h5>
+                    <form action="{{ url_for('eliminar_dia', id_dia=dia.id_dia, id_rutina=rutina.id_rutina) }}" method="POST" onsubmit="return confirm('¿Eliminar este día y todos sus ejercicios?');">
+                        <button type="submit" class="btn-delete-meal" title="Eliminar día">✕</button>
+                    </form>
+                </div>
+
+                <!-- Exercises List -->
+                {% if dia.ejercicios %}
+                    {% for ej in dia.ejercicios %}
+                    <div style="background: #111; border-radius: 8px; padding: 15px; margin-bottom: 10px;">
+                        <!-- Exercise Name & Delete -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="text-white" style="font-weight: bold;">{{ ej.nombre_ejercicio }}</span>
+                            <form action="{{ url_for('eliminar_ejercicio', id_ejercicio=ej.id_ejercicio, id_rutina=rutina.id_rutina) }}" method="POST" onsubmit="return confirm('¿Eliminar este ejercicio?');">
+                                <button type="submit" class="btn-delete-meal" title="Eliminar ejercicio">✕</button>
+                            </form>
+                        </div>
+                        <!-- Exercise Tags -->
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 5px;">
+                            <span style="background: rgba(255,42,75,0.15); color: #ff2a4b; padding: 3px 10px; border-radius: 4px; font-size: 0.8rem;">{{ ej.series }} x {{ ej.repeticiones }}</span>
+                            {% if ej.peso_sugerido %}
+                            <span style="background: rgba(255,170,0,0.15); color: #ffaa00; padding: 3px 10px; border-radius: 4px; font-size: 0.8rem;">{{ ej.peso_sugerido }}</span>
+                            {% endif %}
+                            {% if ej.descanso_seg %}
+                            <span style="background: rgba(0,204,136,0.15); color: #00cc88; padding: 3px 10px; border-radius: 4px; font-size: 0.8rem;">{{ ej.descanso_seg }}s desc.</span>
+                            {% endif %}
+                        </div>
+                        <!-- Exercise Notes -->
+                        {% if ej.notas %}
+                        <p class="text-gray m-0" style="font-size: 0.85rem; font-style: italic; margin-top: 8px;">{{ ej.notas }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-gray" style="font-size: 0.85rem;">Sin ejercicios. Agrega uno abajo.</p>
+                {% endif %}
+
+                <!-- ADD EXERCISE FORM -->
+                <div style="border-top: 1px solid #222; padding-top: 15px; margin-top: 15px;">
+                    <h6 class="text-gray" style="font-weight: bold; font-size: 0.8rem; margin-bottom: 10px;">Agregar Ejercicio</h6>
+                    <form action="{{ url_for('agregar_ejercicio', id_dia=dia.id_dia, id_rutina=rutina.id_rutina) }}" method="POST">
+                        <div style="display: grid; grid-template-columns: 1fr repeat(4, 100px); gap: 10px; align-items: end;">
+                            <div>
+                                <label class="form-label text-gray small font-bold">Ejercicio</label>
+                                <input type="text" name="nombre_ejercicio" class="input-fitness mb-0" placeholder="Nombre del ejercicio" required>
+                            </div>
+                            <div>
+                                <label class="form-label text-gray small font-bold">Series</label>
+                                <input type="number" name="series" class="input-fitness mb-0" value="4" placeholder="Series">
+                            </div>
+                            <div>
+                                <label class="form-label text-gray small font-bold">Reps</label>
+                                <input type="text" name="repeticiones" class="input-fitness mb-0" value="12" placeholder="Reps">
+                            </div>
+                            <div>
+                                <label class="form-label text-gray small font-bold">Peso</label>
+                                <input type="text" name="peso_sugerido" class="input-fitness mb-0" placeholder="Peso">
+                            </div>
+                            <div>
+                                <label class="form-label text-gray small font-bold">Desc.</label>
+                                <input type="number" name="descanso_seg" class="input-fitness mb-0" value="60" placeholder="Desc.">
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 10px;">
+                            <input type="text" name="notas" class="input-fitness mb-0" placeholder="Notas opcionales...">
+                            <button type="submit" class="btn-glow" style="white-space: nowrap;">+ Agregar</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="fitness-panel">
+                <p class="text-gray text-center m-0">Esta rutina no tiene días aún. Usa el formulario de arriba para agregar el primer día.</p>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

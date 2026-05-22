@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Nuevo Atleta - Galindo Fit{% endblock %}
+
+{% block content %}
+<div class="container">
+<div class="fade-in-up" style="margin-top: 30px;">
+    <div class="d-flex justify-content-between align-items-center mb-4" style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 class="section-title text-start m-0">NUEVO <span class="text-red">ATLETA</span></h2>
+        <a href="{{ url_for('dashboard') }}" class="btn-secondary" style="padding: 8px 16px;">Volver al Dashboard</a>
+    </div>
+
+    <div class="fitness-panel" style="max-width: 600px; margin: 0 auto;">
+        <h5 class="font-orbitron mb-4 text-center fw-bold text-red">INSCRIBIR ATLETA</h5>
+        
+        <div class="alert-box mb-4" style="text-align: left; font-size: 0.9rem;">
+            <strong class="font-orbitron text-white">Importante:</strong> Al crear el atleta, su contraseña temporal será <strong>cambiame123</strong>. Asegúrate de decirle que la use para entrar a su portal.
+        </div>
+
+        <form action="{{ url_for('nuevo_atleta') }}" method="POST">
+            <div class="form-group mb-3">
+                <label class="form-label text-gray small font-bold">Nombre *</label>
+                <input type="text" name="nombre" class="input-fitness mb-0" placeholder="Ej: Juan Pérez" required>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label text-gray small font-bold">Correo *</label>
+                <input type="email" name="email" class="input-fitness mb-0" placeholder="juan@correo.com" required>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label text-gray small font-bold">Plan *</label>
+                <select name="id_plan" class="input-fitness mb-0" required>
+                    <option value="" disabled selected>Seleccionar un Plan...</option>
+                    {% for p in planes %}
+                        <option value="{{ p.id_plan }}">{{ p.nombre_plan }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-row-grid mb-4">
+                <div class="form-group mb-0">
+                    <label class="form-label text-gray small font-bold">Peso Inicial (kg)</label>
+                    <input type="number" step="0.1" name="peso_kg" class="input-fitness mb-0" placeholder="Ej: 80.5">
+                </div>
+                <div class="form-group mb-0">
+                    <label class="form-label text-gray small font-bold">Meta de Calorías</label>
+                    <input type="number" name="calorias_objetivo" class="input-fitness mb-0" placeholder="Ej: 2200">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-glow w-100 py-3" style="padding: 15px; font-size: 1.1rem;">REGISTRAR ATLETA</button>
+        </form>
+    </div>
+</div>
+</div>
+{% endblock %}

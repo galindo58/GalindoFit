@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Atleta - Galindo Fit{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="fade-in-up">
+        <div class="d-flex justify-content-between align-items-center mb-4" style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px;">
+            <h2 class="section-title text-start m-0" style="font-size: 1.5rem;">EDITAR <span class="text-red">INFORMACIÓN</span></h2>
+            <a href="{{ url_for('perfil_atleta', id=atleta.id_usuario) }}" class="btn-secondary" style="padding: 8px 16px;">Cancelar</a>
+        </div>
+
+        <!-- FORMULARIO DE DATOS BÁSICOS + MACROS -->
+        <form action="{{ url_for('guardar_edicion', id=atleta.id_usuario) }}" method="POST">
+            <div class="dashboard-layout" style="padding: 0;">
+                
+                <!-- PANEL LATERAL: DATOS BÁSICOS -->
+                <aside class="dashboard-sidebar">
+                    <div class="fitness-panel">
+                        <h5 class="text-white font-orbitron mb-3" style="font-size: 0.85rem;">Datos Básicos</h5>
+                        <div class="form-group mb-3">
+                            <label class="form-label text-gray small font-bold">Nombre</label>
+                            <input type="text" name="nombre" class="input-fitness" value="{{ atleta.nombre }}" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label text-gray small font-bold">Correo</label>
+                            <input type="email" name="email" class="input-fitness" value="{{ atleta.email }}" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label text-gray small font-bold">Plan</label>
+                            <select name="id_plan" class="input-fitness" required>
+                                {% for p in planes %}
+                                    <option value="{{ p.id_plan }}" {% if p.id_plan == atleta.id_plan %}selected{% endif %}>{{ p.nombre_plan }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-row-grid">
+                            <div>
+                                <label class="form-label text-gray small font-bold">Peso Base (kg)</label>
+                                <input type="number" step="0.1" name="peso_kg" class="input-fitness mb-0" value="{{ atleta.peso_kg }}">
+                            </div>
+                            <div>
+                                <label class="form-label text-gray small font-bold">Kcal Objetivo</label>
+                                <input type="number" name="calorias_objetivo" class="input-fitness mb-0" value="{{ atleta.calorias_objetivo }}">
+                            </div>
+                        </div>
+                        <div class="form-group mb-0" style="margin-top: 15px;">
+                            <label class="form-label text-gray small font-bold">Rutina Asignada</label>
+                            <select name="id_rutina" class="input-fitness mb-0">
+                                <option value="">Sin rutina asignada</option>
+                                {% for r in rutinas %}
+                                    <option value="{{ r.id_rutina }}" {% if r.id_rutina == atleta.id_rutina %}selected{% endif %}>{{ r.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- PANEL PRINCIPAL: MACROS Y NOTAS -->
+                <main class="dashboard-main">
+                    
+                    <!-- OBJETIVOS DE MACROS (HORIZONTALES) -->
+                    <div class="fitness-panel mb-4">
+                        <h5 class="text-white font-orbitron mb-3" style="font-size: 0.85rem;">Objetivos de Macros Diarios <small class="text-gray">(en gramos)</small></h5>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                            <div class="macro-input-group">
+                                <div class="macro-input-label" style="background: rgba(255,42,75,0.15); color: #ff2a4b;">P</div>
+                                <input type="number" step="0.1" name="proteinas_objetivo" class="input-fitness mb-0" value="{{ atleta.proteinas_objetivo or '' }}" placeholder="Proteínas">
+                            </div>
+                            <div class="macro-input-group">
+                                <div class="macro-input-label" style="background: rgba(255,170,0,0.15); color: #ffaa00;">C</div>
+                                <input type="number" step="0.1" name="carbohidratos_objetivo" class="input-fitness mb-0" value="{{ atleta.carbohidratos_objetivo or '' }}" placeholder="Carbohidratos">
+                            </div>
+                            <div class="macro-input-group">
+                                <div class="macro-input-label" style="background: rgba(0,204,136,0.15); color: #00cc88;">G</div>
+                                <input type="number" step="0.1" name="grasas_objetivo" class="input-fitness mb-0" value="{{ atleta.grasas_objetivo or '' }}" placeholder="Grasas">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NOTAS DEL ENTRENADOR -->
+                    <div class="fitness-panel mb-4">
+                        <h5 class="text-white font-orbitron mb-3" style="font-size: 0.85rem;">Notas / Recomendaciones Generales</h5>
+                        <textarea name="plan_nutricional" class="input-fitness mb-0" rows="6" placeholder="Escribe notas generales, suplementos, hidratación, tips...">{{ atleta.plan_nutricional or '' }}</textarea>
+                    </div>
+
+                    <div class="text-end" style="text-align: right;">
+                        <button type="submit" class="btn-glow w-100" style="padding: 15px; font-size: 1rem;">GUARDAR DATOS Y MACROS</button>
+                    </div>
+                </main>
+            </div>
+        </form>
+
+        <!-- GESTIÓN DE COMIDAS -->
+        <div>
+            <hr style="border-color: #222; margin: 40px 0;">
+            <h2 class="section-title text-start mb-4" style="font-size: 1.5rem;">PLAN DE <span class="text-red">COMIDAS</span></h2>
+
+            <!-- Formulario para agregar comida -->
+            <div class="fitness-panel mb-4">
+                <h5 class="text-white font-orbitron mb-3" style="font-size: 0.85rem;">Agregar Nueva Comida</h5>
+                <form action="{{ url_for('agregar_comida', id=atleta.id_usuario) }}" method="POST">
+                    <div style="display: grid; grid-template-columns: 200px 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <label class="form-label text-gray small font-bold">Tipo de Comida</label>
+                            <select name="tipo_comida" class="input-fitness mb-0" required>
+                                <option value="Desayuno">🌅 Desayuno</option>
+                                <option value="Almuerzo">☀️ Almuerzo</option>
+                                <option value="Cena">🌙 Cena</option>
+                                <option value="Snack">🍎 Snack</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label text-gray small font-bold">Descripción del Alimento</label>
+                            <input type="text" name="descripcion" class="input-fitness mb-0" placeholder="Ej: 200g Pechuga de pollo a la plancha" required>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; align-items: end;">
+                        <div>
+                            <label class="form-label text-gray small font-bold">Kcal</label>
+                            <input type="number" name="calorias" class="input-fitness mb-0" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="form-label text-gray small font-bold">Proteínas (g)</label>
+                            <input type="number" step="0.1" name="proteinas_g" class="input-fitness mb-0" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="form-label text-gray small font-bold">Carbos (g)</label>
+                            <input type="number" step="0.1" name="carbohidratos_g" class="input-fitness mb-0" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="form-label text-gray small font-bold">Grasas (g)</label>
+                            <input type="number" step="0.1" name="grasas_g" class="input-fitness mb-0" placeholder="0">
+                        </div>
+                        <div>
+                            <button type="submit" class="btn-glow w-100" style="padding: 12px;">+ Agregar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Lista de comidas existentes -->
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                {% set tipos = ['Desayuno', 'Almuerzo', 'Cena', 'Snack'] %}
+                {% set iconos = {'Desayuno': '🌅', 'Almuerzo': '☀️', 'Cena': '🌙', 'Snack': '🍎'} %}
+
+                {% for tipo in tipos %}
+                    {% set comidas_tipo = comidas | selectattr('tipo_comida', 'equalto', tipo) | list %}
+                    {% if comidas_tipo %}
+                    <div class="meal-card mb-4" style="height: fit-content;">
+                        <div class="meal-card-header">
+                            <span class="meal-icon">{{ iconos[tipo] }}</span>
+                            <h5 class="font-orbitron m-0">{{ tipo }}</h5>
+                            {% set total_cal = comidas_tipo | map(attribute='calorias') | sum %}
+                            <span class="badge badge-danger" style="margin-left: auto;">{{ total_cal }} kcal</span>
+                        </div>
+                        <div class="meal-card-body">
+                            {% for c in comidas_tipo %}
+                            <div class="meal-item">
+                                <div class="meal-item-info">
+                                    <p class="text-white m-0 font-bold" style="font-size: 14px;">{{ c.descripcion }}</p>
+                                    <div class="meal-macros">
+                                        {% if c.proteinas_g %}<span class="macro-tag macro-prot">P: {{ c.proteinas_g }}g</span>{% endif %}
+                                        {% if c.carbohidratos_g %}<span class="macro-tag macro-carb">C: {{ c.carbohidratos_g }}g</span>{% endif %}
+                                        {% if c.grasas_g %}<span class="macro-tag macro-fat">G: {{ c.grasas_g }}g</span>{% endif %}
+                                        {% if c.calorias %}<span class="macro-tag macro-cal">{{ c.calorias }} kcal</span>{% endif %}
+                                    </div>
+                                </div>
+                                <form action="{{ url_for('eliminar_comida', id_comida=c.id_comida, id_usuario=atleta.id_usuario) }}" method="POST" style="flex-shrink: 0;">
+                                    <button type="submit" class="btn-delete-meal" title="Eliminar" onclick="return confirm('¿Eliminar esta comida?')">✕</button>
+                                </form>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            {% if not comidas %}
+            <div class="fitness-panel">
+                <p class="text-gray text-center m-0 py-4">No has agregado ninguna comida aún. Usa el formulario de arriba para empezar.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+@media (max-width: 992px) {
+    .dashboard-layout { flex-direction: column; }
+    .dashboard-sidebar { flex: 1 1 100%; }
+    .meal-card { width: 100%; }
+}
+</style>
+{% endblock %}

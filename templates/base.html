@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Galindo Fit{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_with_timestamp('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="logo">GALINDO <span>FIT</span></a>
+            <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <div class="nav-menu" id="navMenu">
+                <a href="{{ url_for('home') }}">Inicio</a>
+                {% if session.get('user_id') %}
+                    <a href="{{ url_for('dashboard') }}">Progreso</a>
+                    <a href="{{ url_for('logout') }}" class="btn-nav">Salir</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Portal Atletas</a>
+                    <a href="{{ url_for('registro') }}" class="btn-nav">Pruébalo Gratis</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="content-wrapper fade-in-up">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{{ url_with_timestamp('static', filename='js/main.js') }}"></script>
+</body>
+</html>

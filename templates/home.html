@@ -1,0 +1,461 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Galindo Fit{% endblock %}
+
+{% block content %}
+<!-- ESTILOS ADICIONALES PARA LA PÁGINA DE INICIO PREMIUM -->
+<style>
+    .hero-section {
+        background-position: center !important;
+        background-size: cover !important;
+        background-repeat: no-repeat !important;
+        transition: transform 0.5s ease;
+    }
+
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        margin-top: 40px;
+    }
+
+    .feature-card {
+        border-left: 3px solid var(--accent-red) !important;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(255, 42, 75, 0.2);
+        border-left-color: var(--text-white) !important;
+    }
+
+    .feature-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        gap: 15px;
+    }
+
+    .feature-icon-wrapper {
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 42, 75, 0.1);
+        border: 1px solid rgba(255, 42, 75, 0.3);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-red);
+        box-shadow: 0 0 15px rgba(255, 42, 75, 0.1);
+        transition: all 0.3s;
+    }
+
+    .feature-card:hover .feature-icon-wrapper {
+        background: var(--accent-red);
+        color: var(--text-white);
+        box-shadow: 0 0 20px rgba(255, 42, 75, 0.5);
+    }
+
+    .feature-title {
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 700;
+        font-size: 1.25rem;
+        margin: 0;
+        letter-spacing: 0.5px;
+        color: var(--text-white);
+    }
+
+    .feature-desc {
+        color: var(--text-gray);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+
+    .feature-list {
+        list-style: none;
+        padding-left: 0;
+        margin: 0 0 20px 0;
+    }
+
+    .feature-list li {
+        position: relative;
+        padding-left: 25px;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        color: #ccc;
+    }
+
+    .feature-list li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--accent-red);
+        font-weight: 900;
+    }
+
+    .quick-access-section {
+        background: linear-gradient(135deg, #141414 0%, #0d0d0d 100%);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 50px;
+        margin-top: 60px;
+        text-align: center;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .quick-access-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent-red), #990011);
+    }
+
+    .access-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        margin-top: 40px;
+    }
+
+    .access-box {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid #222;
+        border-radius: 12px;
+        padding: 30px;
+        transition: all 0.3s;
+    }
+
+    .access-box:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 42, 75, 0.3);
+    }
+
+    .compare-section {
+        margin-top: 80px;
+    }
+
+    .table-wrapper {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+    }
+
+    .compare-table th {
+        font-family: 'Orbitron', sans-serif;
+        color: var(--text-white);
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .compare-table td {
+        color: #ccc;
+        font-size: 0.95rem;
+    }
+
+    .badge-role {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-family: 'Orbitron', sans-serif;
+    }
+
+    .badge-atleta {
+        background: rgba(0, 204, 136, 0.15);
+        color: #00cc88;
+        border: 1px solid rgba(0, 204, 136, 0.3);
+    }
+
+    .badge-entrenador {
+        background: rgba(255, 42, 75, 0.15);
+        color: var(--accent-red);
+        border: 1px solid rgba(255, 42, 75, 0.3);
+    }
+
+    @media (max-width: 992px) {
+        .feature-grid, .access-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<!-- HERO SECTION MEJORADA Y PROFESIONAL -->
+<section class="hero-section" style="background-image: url('{{ url_for('static', filename='img/dark_gym.png') }}');">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 style="text-transform: uppercase; font-family: 'Orbitron', sans-serif;">GALINDO <span class="text-red">FIT</span></h1>
+        <h2>ENTRENAMIENTO Y NUTRICIÓN DE ALTO RENDIMIENTO</h2>
+        <p class="hero-tagline" style="font-size: 1.25rem; max-width: 700px; margin: 0 auto 40px auto; color: #ccc;">
+            La plataforma integral definitiva para el monitoreo deportivo. Diseñada meticulosamente para entrenadores profesionales y atletas de alto nivel.
+        </p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('registro') }}" class="btn btn-glow" style="padding: 15px 35px; font-size: 1rem; margin-right: 15px;">Empezar Ahora</a>
+            <a href="#modulos" class="btn btn-secondary" style="padding: 14px 35px; font-size: 1rem;">Saber Más</a>
+        </div>
+    </div>
+</section>
+
+<!-- MÓDULOS DE ÚLTIMA GENERACIÓN (Detalle de nuevas capacidades) -->
+<section id="modulos" class="container section-spacing">
+    <h2 class="section-title text-start">NUESTRAS <span class="text-red">HERRAMIENTAS</span></h2>
+    <p class="section-subtitle text-start" style="margin-bottom: 40px; font-size: 1.1rem;">
+        Un ecosistema robusto que automatiza la planificación, facilita la nutrición y genera un control técnico de progreso.
+    </p>
+
+    <div class="feature-grid">
+        <!-- CARD 1: PORTAL DUAL Y SEPARADO -->
+        <div class="fitness-panel feature-card">
+            <div>
+                <div class="feature-header">
+                    <div class="feature-icon-wrapper">
+                        <!-- SVG Shield/Lock Icon -->
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">ACCESO Y ROLES DUALES</h3>
+                </div>
+                <p class="feature-desc">
+                    Experiencia totalmente personalizada. El sistema distingue entre entrenador y atleta para ofrecer interfaces optimizadas según la necesidad del usuario.
+                </p>
+                <ul class="feature-list">
+                    <li><strong>Panel de Entrenador</strong>: Vista unificada de atletas, buscador dinámico, paginación integrada y control global de datos.</li>
+                    <li><strong>Portal de Atleta</strong>: Área interactiva privada diseñada para móviles que muestra entrenamientos y nutrición del día.</li>
+                </ul>
+            </div>
+            <div>
+                <a href="#portales" class="btn btn-outline-light w-100" style="font-size: 0.85rem;">Ir a Portales de Acceso</a>
+            </div>
+        </div>
+
+        <!-- CARD 2: PLANIFICADOR DE RUTINAS CIENTÍFICO -->
+        <div class="fitness-panel feature-card">
+            <div>
+                <div class="feature-header">
+                    <div class="feature-icon-wrapper">
+                        <!-- SVG Dumbbell Icon -->
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">RUTINAS DE ALTA PRECISIÓN</h3>
+                </div>
+                <p class="feature-desc">
+                    Diseña programas de entrenamiento estructurados por días. El atleta ejecuta su plan con total claridad sobre qué hacer y cómo hacerlo.
+                </p>
+                <ul class="feature-list">
+                    <li><strong>Días Estructurados</strong>: Permite organizar la rutina en sesiones específicas (ej: Empuje, Halón, Pierna).</li>
+                    <li><strong>Variables del Ejercicio</strong>: Define series exactas, repeticiones, peso sugerido en kg y tiempos de descanso en segundos.</li>
+                    <li><strong>Notas Técnicas</strong>: Instrucciones específicas del entrenador para guiar la postura y ejecución.</li>
+                </ul>
+            </div>
+            <div>
+                {% if session.get('id_rol') == 1 %}
+                    <a href="{{ url_for('rutinas') }}" class="btn btn-glow w-100" style="font-size: 0.85rem;">Gestionar Catálogo de Rutinas</a>
+                {% else %}
+                    <a href="{{ url_for('registro') }}" class="btn btn-outline-secondary w-100" style="font-size: 0.85rem; pointer-events: none;">Visualizable en Portal</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- CARD 3: CONTROL NUTRICIONAL INTELIGENTE -->
+        <div class="fitness-panel feature-card">
+            <div>
+                <div class="feature-header">
+                    <div class="feature-icon-wrapper">
+                        <!-- SVG Food Icon -->
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">PLANES DE NUTRICIÓN REALES</h3>
+                </div>
+                <p class="feature-desc">
+                    La alimentación es el 70% del éxito. Administra un plan nutricional completo enfocado en macronutrientes y calorías adaptado a cada persona.
+                </p>
+                <ul class="feature-list">
+                    <li><strong>Distribución por Comidas</strong>: Estructura la alimentación en Desayuno, Almuerzo, Cena y Snacks detallados.</li>
+                    <li><strong>Cálculo Automático de Macros</strong>: Desglose inmediato de gramos de Proteínas, Carbohidratos y Grasas.</li>
+                    <li><strong>Ingredientes Cotidianos</strong>: Diseñado para enfocar recetas realistas y sostenibles en el tiempo.</li>
+                </ul>
+            </div>
+            <div>
+                {% if session.get('id_rol') == 1 %}
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light w-100" style="font-size: 0.85rem;">Asignar a un Atleta</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-secondary w-100" style="font-size: 0.85rem; pointer-events: none;">Visualizable en Portal</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- CARD 4: MONITOREO MÉTRICO E HISTORIAL DE PESO -->
+        <div class="fitness-panel feature-card">
+            <div>
+                <div class="feature-header">
+                    <div class="feature-icon-wrapper">
+                        <!-- SVG Chart Icon -->
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">SEGUIMIENTO DE PESO ACTIVO</h3>
+                </div>
+                <p class="feature-desc">
+                    Lleva el control de la evolución física con mediciones cronológicas de peso y gráficos en tiempo real fáciles de interpretar.
+                </p>
+                <ul class="feature-list">
+                    <li><strong>Peso Inicial Garantizado</strong>: Registrado al inicio por el entrenador para evaluar la trayectoria de avance.</li>
+                    <li><strong>Gráfico Dinámico de Evolución</strong>: Generación inmediata de curvas de peso corporal con Chart.js.</li>
+                    <li><strong>Autogestión de Registro</strong>: El atleta actualiza su peso de forma rápida desde su portal personal.</li>
+                </ul>
+            </div>
+            <div>
+                <a href="#metricas" class="btn btn-outline-light w-100" style="font-size: 0.85rem;">Ver Gráfico de Adherencia</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECCIÓN DE MÉTRICAS Y ADHERENCIA CON GRÁFICO -->
+<section id="metricas" class="container section-spacing">
+    <h2 class="section-title text-start">ADHERENCIA Y <span class="text-red">ÉXITO</span></h2>
+    <div class="segmentation-wrapper">
+        <div class="chart-box">
+            <canvas id="userSegmentationChart"></canvas>
+        </div>
+        <div class="segmentation-legend">
+            <div class="legend-item"><span class="color-box color-free"></span> Cumplimiento de Peso Objetivo (65%)</div>
+            <div class="legend-item"><span class="color-box color-premium"></span> En Progreso Activo (25%)</div>
+            <div class="legend-item"><span class="color-box color-aliados"></span> Fase de Iniciación (10%)</div>
+        </div>
+    </div>
+    <p class="section-subtitle mt-5"><em>El 90% de los atletas bajo asesoría activa muestran una consistencia sobresaliente en peso y macronutrientes.</em></p>
+</section>
+
+<!-- SECCIÓN DE ACCESO RÁPIDO PARA ROLES DUALES -->
+<section id="portales" class="container section-spacing">
+    <div class="quick-access-section">
+        <h2 class="font-orbitron text-white mb-2" style="font-weight: 900; letter-spacing: 1px;">PORTALES DE INGRESO DIRECTO</h2>
+        <p class="text-gray" style="max-width: 600px; margin: 0 auto 30px auto; font-size: 1.1rem;">
+            Selecciona tu tipo de perfil para acceder a tus herramientas y datos específicos.
+        </p>
+
+        <div class="access-grid">
+            <!-- ACCESO ATLETAS -->
+            <div class="access-box">
+                <h4 class="font-orbitron text-white mb-3" style="font-weight: 700;">ÁREA DE ATLETAS</h4>
+                <p class="text-gray small mb-4" style="line-height: 1.6; min-height: 50px;">
+                    Accede a tu portal para registrar tu peso actual, consultar tus entrenamientos asignados y seguir la dieta del día.
+                </p>
+                <a href="{{ url_for('login') }}" class="btn btn-glow w-100">Ingreso Atletas</a>
+            </div>
+
+            <!-- ACCESO ENTRENADOR -->
+            <div class="access-box" style="border-color: rgba(255, 42, 75, 0.1);">
+                <h4 class="font-orbitron text-white mb-3" style="font-weight: 700;">ÁREA DE ENTRENADORES</h4>
+                <p class="text-gray small mb-4" style="line-height: 1.6; min-height: 50px;">
+                    Ingresa a tu dashboard administrativo para gestionar clientes, crear planes de nutrición y estructurar rutinas completas.
+                </p>
+                <a href="{{ url_for('login_entrenador') }}" class="btn btn-secondary w-100" style="border: 1px solid var(--accent-red);">Acceso Entrenador</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TABLA COMPARATIVA DE ACCESOS Y CAPACIDADES -->
+<section class="container section-spacing compare-section">
+    <h2 class="section-title text-start mb-4">CAPACIDADES <span class="text-red">POR ROL</span></h2>
+    <p class="section-subtitle text-start" style="margin-bottom: 40px; font-size: 1.1rem;">
+        Revisa las funcionalidades detalladas a las que tiene acceso cada tipo de usuario en el sistema.
+    </p>
+
+    <div class="table-wrapper">
+        <table class="compare-table">
+            <thead>
+                <tr>
+                    <th>Característica</th>
+                    <th><span class="badge-role badge-atleta">Atleta (Cliente)</span></th>
+                    <th><span class="badge-role badge-entrenador">Entrenador (Admin)</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Visualización de Rutinas</strong></td>
+                    <td>Lectura interactiva y guía de ejercicios.</td>
+                    <td>Creación, edición y asignación completa.</td>
+                </tr>
+                <tr>
+                    <td><strong>Plan de Alimentación</strong></td>
+                    <td>Consulta del plan nutricional y macros.</td>
+                    <td>Edición de ingestas y cálculo automático de calorías.</td>
+                </tr>
+                <tr>
+                    <td><strong>Control de Peso Corporal</strong></td>
+                    <td>Auto-registro diario/semanal en portal.</td>
+                    <td>Asignación de peso inicial e ideal y monitoreo.</td>
+                </tr>
+                <tr>
+                    <td><strong>Gráfico de Evolución</strong></td>
+                    <td>Curva interactiva de trayectoria del atleta.</td>
+                    <td>Análisis del gráfico histórico de todos sus atletas.</td>
+                </tr>
+                <tr>
+                    <td><strong>Gestión de Usuarios</strong></td>
+                    <td>Acceso exclusivo a perfil propio.</td>
+                    <td>Buscador, creación, paginación y eliminación de atletas.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var ctx = document.getElementById('userSegmentationChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Objetivo Cumplido', 'En Progreso Activo', 'Fase de Iniciación'],
+            datasets: [{
+                data: [65, 25, 10],
+                backgroundColor: ['#ff2a4b', '#2a2a2a', '#5a5a5a'],
+                borderColor: '#141414',
+                borderWidth: 3,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(10,10,10,0.9)',
+                    titleFont: { size: 14, family: 'Montserrat', weight: 'bold' },
+                    bodyFont: { size: 14, family: 'Montserrat' },
+                    borderColor: '#222',
+                    borderWidth: 1,
+                    padding: 12,
+                    cornerRadius: 6,
+                    displayColors: false
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

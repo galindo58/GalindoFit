@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestionar Atleta - Galindo Fit{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <div class="d-flex justify-content-between align-items-center mb-4" style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 class="section-title text-start m-0">GESTIONAR <span class="text-red">ATLETA</span></h2>
+        <a href="{{ url_for('dashboard') }}" class="btn-secondary" style="padding: 8px 16px;">Volver</a>
+    </div>
+
+    <div class="dashboard-layout">
+        
+        <!-- PANEL LATERAL (Info Básica) -->
+        <aside class="dashboard-sidebar">
+            <div class="fitness-panel">
+                <div class="profile-header mb-4">
+                    <div class="avatar-glow">{{ atleta.nombre[:2].upper() }}</div>
+                    <div>
+                        <h6 class="mb-0 fw-bold font-orbitron">{{ atleta.nombre }}</h6>
+                        <span class="badge badge-danger">{{ atleta.nombre_plan }}</span>
+                    </div>
+                </div>
+
+                <form action="{{ url_for('obtener_usuario', id=atleta.id_usuario) }}" method="POST">
+                    <div class="form-group mb-3">
+                        <label class="form-label text-gray small font-bold">Nombre</label>
+                        <input type="text" name="nombre" class="input-fitness" value="{{ atleta.nombre }}" required>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label text-gray small font-bold">Correo</label>
+                        <input type="email" name="email" class="input-fitness" value="{{ atleta.email }}" required>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label text-gray small font-bold">Plan</label>
+                        <select name="id_plan" class="input-fitness" required>
+                            {% for p in planes %}
+                                <option value="{{ p.id_plan }}" {% if p.id_plan == atleta.id_plan %}selected{% endif %}>{{ p.nombre_plan }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-row-grid mb-4">
+                        <div>
+                            <label class="form-label text-gray small font-bold">Peso Inicial (kg)</label>
+                            <input type="number" step="0.1" name="peso_kg" class="input-fitness" value="{{ atleta.peso_kg }}">
+                        </div>
+                        <div>
+                            <label class="form-label text-gray small font-bold">Kcal Objetivo</label>
+                            <input type="number" name="calorias_objetivo" class="input-fitness" value="{{ atleta.calorias_objetivo }}">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-glow w-100">Guardar Cambios Base</button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- PANEL PRINCIPAL (Nutrición y Gráfico) -->
+        <main class="dashboard-main">
+            
+            <!-- PLAN NUTRICIONAL -->
+            <div class="fitness-panel mb-4">
+                <h5 class="text-white font-orbitron mb-3">Plan Nutricional y Notas</h5>
+                <form action="{{ url_for('guardar_nutricion', id=atleta.id_usuario) }}" method="POST">
+                    <div class="form-group mb-3">
+                        <textarea name="plan_nutricional" class="input-fitness" rows="8" placeholder="Escribe la dieta, macros o notas importantes aquí...">{{ atleta.plan_nutricional or '' }}</textarea>
+                    </div>
+                    <button type="submit" class="btn-glow" style="max-width: 250px;">Guardar Nutrición</button>
+                </form>
+            </div>
+            
+            <!-- EVOLUCIÓN DE PESO -->
+            <div class="fitness-panel">
+                <h5 class="text-white font-orbitron mb-3">Evolución de Peso (Registros del Atleta)</h5>
+                <div style="height: 300px; width: 100%;">
+                    <canvas id="weightAdminChart"></canvas>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const progresoData = [
+        {% for p in progreso %}
+            { x: '{{ p.fecha_registro }}', y: {{ p.peso_kg }} },
+        {% endfor %}
+    ];
+
+    if (progresoData.length > 0) {
+        const ctx = document.getElementById('weightAdminChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: progresoData.map(d => d.x),
+                datasets: [{
+                    label: 'Peso (kg)',
+                    data: progresoData.map(d => d.y),
+                    borderColor: '#ff2a4b',
+                    backgroundColor: 'rgba(255, 42, 75, 0.2)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true,
+                    pointBackgroundColor: '#ff2a4b',
+                    pointBorderColor: '#fff',
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: { color: '#333' },
+                        ticks: { color: '#aaa' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#aaa' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    } else {
+        document.getElementById('weightAdminChart').parentElement.innerHTML = '<p class="text-gray text-center m-0" style="padding-top: 130px;">El atleta no ha registrado su peso aún.</p>';
+    }
+});
+</script>
+{% endblock %}

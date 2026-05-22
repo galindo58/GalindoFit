@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block title %}Perfil Atleta - Galindo Fit{% endblock %}
+
+{% block content %}
+<div class="container">
+<div class="fade-in-up">
+    <div class="d-flex justify-content-between align-items-center mb-4" style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px;">
+        <h2 class="section-title text-start m-0" style="font-size: 1.5rem;">PERFIL DEL <span class="text-red">ATLETA</span></h2>
+        <div>
+            <a href="{{ url_for('editar_atleta', id=atleta.id_usuario) }}" class="btn-glow" style="padding: 8px 16px; margin-right: 10px;">Editar Información</a>
+            <a href="{{ url_for('dashboard') }}" class="btn-secondary" style="padding: 8px 16px;">Volver</a>
+        </div>
+    </div>
+
+    <div class="dashboard-layout">
+        <!-- PANEL LATERAL -->
+        <aside class="dashboard-sidebar">
+            <div class="fitness-panel mb-4">
+                <div class="profile-header">
+                    <div class="avatar-glow">{{ atleta.nombre[:2].upper() }}</div>
+                    <div>
+                        <h6 class="mb-0 fw-bold font-orbitron">{{ atleta.nombre }}</h6>
+                        <span class="badge badge-danger">{{ atleta.nombre_plan }}</span>
+                    </div>
+                </div>
+                <hr style="border-color: #333; margin: 15px 0;">
+                <p class="text-gray small mb-2">Correo: <span class="text-white">{{ atleta.email }}</span></p>
+                <p class="text-gray small mb-2">Kcal Objetivo: <span class="text-white">{{ atleta.calorias_objetivo or '--' }}</span></p>
+                <p class="text-gray small m-0">Peso Base: <span class="text-white">{{ atleta.peso_kg or '--' }} kg</span></p>
+            </div>
+
+            <!-- Distribución de Macros -->
+            {% if atleta.proteinas_objetivo or atleta.carbohidratos_objetivo or atleta.grasas_objetivo %}
+            <div class="fitness-panel">
+                <h5 class="text-white font-orbitron mb-3" style="font-size: 0.85rem;">Objetivos de Macros</h5>
+                <div style="height: 200px; display: flex; justify-content: center;">
+                    <canvas id="macroChart"></canvas>
+                </div>
+                <div class="macro-legend">
+                    <div class="macro-legend-item">
+                        <span class="macro-dot" style="background: #ff2a4b;"></span>
+                        <span class="text-gray small">Proteínas: <strong class="text-white">{{ atleta.proteinas_objetivo or 0 }}g</strong></span>
+                    </div>
+                    <div class="macro-legend-item">
+                        <span class="macro-dot" style="background: #ffaa00;"></span>
+                        <span class="text-gray small">Carbohidratos: <strong class="text-white">{{ atleta.carbohidratos_objetivo or 0 }}g</strong></span>
+                    </div>
+                    <div class="macro-legend-item">
+                        <span class="macro-dot" style="background: #00cc88;"></span>
+                        <span class="text-gray small">Grasas: <strong class="text-white">{{ atleta.grasas_objetivo or 0 }}g</strong></span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </aside>
+
+        <!-- PANEL PRINCIPAL -->
+        <main class="dashboard-main">
+
+            <!-- PLAN DE COMIDAS -->
+            <h2 class="section-title text-start mb-4" style="font-size: 1.3rem;">PLAN DE <span class="text-red">COMIDAS</span></h2>
+            {% set tipos = ['Desayuno', 'Almuerzo', 'Cena', 'Snack'] %}
+            {% set iconos = {'Desayuno': '🌅', 'Almuerzo': '☀️', 'Cena': '🌙', 'Snack': '🍎'} %}
+
+            {% for tipo in tipos %}
+                {% set comidas_tipo = comidas | selectattr('tipo_comida', 'equalto', tipo) | list %}
+                {% if comidas_tipo %}
+                <div class="meal-card mb-4">
+                    <div class="meal-card-header">
+                        <span class="meal-icon">{{ iconos[tipo] }}</span>
+                        <h5 class="font-orbitron m-0">{{ tipo }}</h5>
+                        {% set total_cal = comidas_tipo | map(attribute='calorias') | sum %}
+                        <span class="badge badge-danger" style="margin-left: auto;">{{ total_cal }} kcal</span>
+                    </div>
+                    <div class="meal-card-body">
+                        {% for c in comidas_tipo %}
+                        <div class="meal-item">
+                            <div class="meal-item-info">
+                                <p class="text-white m-0 font-bold">{{ c.descripcion }}</p>
+                                <div class="meal-macros">
+                                    {% if c.proteinas_g %}<span class="macro-tag macro-prot">P: {{ c.proteinas_g }}g</span>{% endif %}
+                                    {% if c.carbohidratos_g %}<span class="macro-tag macro-carb">C: {{ c.carbohidratos_g }}g</span>{% endif %}
+                                    {% if c.grasas_g %}<span class="macro-tag macro-fat">G: {{ c.grasas_g }}g</span>{% endif %}
+                                    {% if c.calorias %}<span class="macro-tag macro-cal">{{ c.calorias }} kcal</span>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+
+            {% if not comidas %}
+            <div class="fitness-panel mb-4">
+                <p class="text-gray text-center m-0 py-4">Aún no se han definido comidas. Haz clic en "Editar Información" para agregar el plan de comidas.</p>
+            </div>
+            {% endif %}
+
+            <!-- NOTAS -->
+            {% if atleta.plan_nutricional %}
+            <div class="fitness-panel mb-4">
+                <h5 class="text-white font-orbitron mb-3" style="font-size: 0.85rem;">Notas del Entrenador</h5>
+                <pre style="color: #ccc; font-family: 'Montserrat', sans-serif; white-space: pre-wrap; font-size: 0.95rem; line-height: 1.6; margin: 0;">{{ atleta.plan_nutricional }}</pre>
+            </div>
+            {% endif %}
+
+            <!-- RUTINA ASIGNADA -->
+            <h2 class="section-title text-start mb-4" style="font-size: 1.3rem;">RUTINA <span class="text-red">ASIGNADA</span></h2>
+            
+            {% if rutina %}
+            <div class="fitness-panel mb-4" style="border-left: 3px solid #ff2a4b;">
+                <h5 class="font-orbitron text-white m-0">{{ rutina.nombre }}</h5>
+                {% if rutina.descripcion %}
+                <p class="text-gray small mb-0" style="margin-top: 8px;">{{ rutina.descripcion }}</p>
+                {% endif %}
+            </div>
+            
+            {% for dia in dias_rutina %}
+            <div class="fitness-panel mb-4">
+                <h5 class="font-orbitron text-red mb-3" style="font-size: 0.9rem;">{{ dia.nombre_dia }}</h5>
+                {% for ej in dia.ejercicios %}
+                <div style="background: #111; border-radius: 8px; padding: 12px 15px; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span class="text-white font-bold" style="font-size: 0.95rem;">{{ ej.nombre_ejercicio }}</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <span style="background: rgba(255,42,75,0.15); color: #ff2a4b; padding: 3px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">{{ ej.series }} x {{ ej.repeticiones }}</span>
+                        {% if ej.peso_sugerido %}
+                        <span style="background: rgba(255,170,0,0.15); color: #ffaa00; padding: 3px 10px; border-radius: 4px; font-size: 0.8rem;">{{ ej.peso_sugerido }}</span>
+                        {% endif %}
+                        {% if ej.descanso_seg %}
+                        <span style="background: rgba(0,204,136,0.15); color: #00cc88; padding: 3px 10px; border-radius: 4px; font-size: 0.8rem;">{{ ej.descanso_seg }}s desc.</span>
+                        {% endif %}
+                    </div>
+                    {% if ej.notas %}
+                    <p class="text-gray small mb-0" style="margin-top: 6px; font-style: italic;">{{ ej.notas }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="fitness-panel mb-4">
+                <p class="text-gray text-center m-0 py-4">Este atleta no tiene una rutina asignada. Asígnale una desde "Editar Información".</p>
+            </div>
+            {% endif %}
+
+            <!-- GRÁFICO DE PESO -->
+            <h2 class="section-title text-start mb-4" style="font-size: 1.3rem;">EVOLUCIÓN DE <span class="text-red">PESO</span></h2>
+            <div class="fitness-panel">
+                <div style="height: 280px; width: 100%;">
+                    <canvas id="weightAdminChart"></canvas>
+                </div>
+            </div>
+        </main>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // GRÁFICO DE PESO
+    const progresoData = [
+        {% for p in progreso %}
+            { x: '{{ p.fecha_registro }}', y: {{ p.peso_kg }} },
+        {% endfor %}
+    ];
+    if (progresoData.length > 0) {
+        new Chart(document.getElementById('weightAdminChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: progresoData.map(d => d.x),
+                datasets: [{
+                    label: 'Peso (kg)',
+                    data: progresoData.map(d => d.y),
+                    borderColor: '#ff2a4b',
+                    backgroundColor: 'rgba(255, 42, 75, 0.15)',
+                    borderWidth: 2, tension: 0.3, fill: true,
+                    pointBackgroundColor: '#ff2a4b', pointBorderColor: '#fff', pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: false, grid: { color: '#222' }, ticks: { color: '#aaa' } },
+                    x: { grid: { display: false }, ticks: { color: '#aaa' } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    } else {
+        document.getElementById('weightAdminChart').parentElement.innerHTML = '<p class="text-gray text-center m-0" style="padding-top: 120px;">El atleta no ha registrado su peso aún.</p>';
+    }
+
+    // GRÁFICO DE MACROS (DONA)
+    const macroCanvas = document.getElementById('macroChart');
+    if (macroCanvas) {
+        const prot = {{ atleta.proteinas_objetivo or 0 }};
+        const carbs = {{ atleta.carbohidratos_objetivo or 0 }};
+        const fat = {{ atleta.grasas_objetivo or 0 }};
+        new Chart(macroCanvas.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Proteínas', 'Carbohidratos', 'Grasas'],
+                datasets: [{
+                    data: [prot, carbs, fat],
+                    backgroundColor: ['#ff2a4b', '#ffaa00', '#00cc88'],
+                    borderColor: '#141414', borderWidth: 3, hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.85)',
+                        callbacks: {
+                            label: function(ctx) {
+                                const total = prot + carbs + fat;
+                                const pct = total > 0 ? Math.round(ctx.raw / total * 100) : 0;
+                                return ctx.label + ': ' + ctx.raw + 'g (' + pct + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

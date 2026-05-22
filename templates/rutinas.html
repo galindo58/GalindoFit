@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Rutinas - Galindo Fit{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 40px; max-width: 1000px;">
+    <!-- HEADER -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+        <h2 class="section-title m-0" style="font-size: 1.8rem; text-align: left;">GESTIÓN DE <span class="text-red">RUTINAS</span></h2>
+        <div style="display: flex; gap: 15px;">
+            <a href="{{ url_for('nueva_rutina') }}" class="btn-glow" style="padding: 10px 20px;">+ Nueva Rutina</a>
+            <a href="{{ url_for('dashboard') }}" class="btn-secondary" style="padding: 10px 20px;">Volver al Dashboard</a>
+        </div>
+    </div>
+
+    <!-- CARDS DE RUTINAS -->
+    {% if rutinas %}
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px;">
+        {% for r in rutinas %}
+        <div class="fitness-panel fade-in-up" style="display: flex; flex-direction: column; height: 100%; padding: 25px;">
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                <h5 class="font-orbitron text-white m-0" style="font-size: 1.15rem;">{{ r.nombre }}</h5>
+                <span class="badge badge-danger" style="font-size: 0.75rem; padding: 5px 10px; background: rgba(255,42,75,0.15); color: #ff2a4b; border: 1px solid #ff2a4b;">{{ r.num_dias }} DÍAS</span>
+            </div>
+            
+            {% if r.descripcion %}
+            <p class="text-gray small mb-4" style="line-height: 1.6; flex-grow: 1;">{{ r.descripcion }}</p>
+            {% else %}
+            <div style="flex-grow: 1;"></div>
+            {% endif %}
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #222; padding-top: 20px;">
+                <a href="{{ url_for('editar_rutina', id=r.id_rutina) }}" class="btn-glow" style="padding: 8px 20px; font-size: 0.9rem;">Editar Rutina</a>
+                <form action="{{ url_for('eliminar_rutina', id=r.id_rutina) }}" method="POST" style="margin: 0;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta rutina? Esta acción no se puede deshacer.');">
+                    <button type="submit" style="background: transparent; border: 1px solid #ff2a4b; color: #ff2a4b; padding: 8px 20px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.background='#ff2a4b'; this.style.color='#fff'; this.style.boxShadow='0 0 10px rgba(255,42,75,0.5)';" onmouseout="this.style.background='transparent'; this.style.color='#ff2a4b'; this.style.boxShadow='none';">Eliminar</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="fitness-panel fade-in-up text-center" style="padding: 40px;">
+        <p class="text-gray mb-0" style="font-size: 1.1rem;">No has creado ninguna rutina aún.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
